@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/POO/ClinicaVet/ClinicaVet.iml" filepath="$PROJECT_DIR$/POO/ClinicaVet/ClinicaVet.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/FURB.iml" filepath="$PROJECT_DIR$/.idea/FURB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IntroducaoProgramacao/IntroducaoProgramacao.iml" filepath="$PROJECT_DIR$/IntroducaoProgramacao/IntroducaoProgramacao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/POO/Lista10/Lista10/Lista10.iml" filepath="$PROJECT_DIR$/POO/Lista10/Lista10/Lista10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/POO/Lista10/Lista11.iml" filepath="$PROJECT_DIR$/POO/Lista10/Lista11.iml" />
+      <module fileurl="file://$PROJECT_DIR$/POO/ProjetoProva/ProjetoProva.iml" filepath="$PROJECT_DIR$/POO/ProjetoProva/ProjetoProva.iml" />
+    </modules>
+  </component>
+</project>
