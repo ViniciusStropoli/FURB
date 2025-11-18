@@ -1,0 +1,9 @@
+Todos os registradores de 8086 tem 16 bits
+Os registradores Ax, Bx, Cx e Dx podem se dividir em dois registradores de 8 bits AH(high) e AL(low)
+
+endereço lógico e endereço físico.
+-o BIU faz o manejamento de endereços lógicos e físicos
+
+criar projeto
+65536 intern memory size 
+f7 compila no proteus 

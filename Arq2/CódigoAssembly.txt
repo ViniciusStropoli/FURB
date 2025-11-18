@@ -1,0 +1,476 @@
+; multi-segment executable file template.
+
+data segment
+    ; add your data here!
+rilf db 0 ;rotaciona direita ou esquerda (0 = esquerda, 1 = direita)
+rlef db 0 ;numero rotacoes direita
+rrig db 0 ;numero rotacoes esquerda
+clef db 0 ;numero rotacoes canhao esquerda
+crig db 0 ;numero rotacoes canhao direita
+
+ovni db "      +      +      +      +      +                                             "
+     db "     +*+    +*+    +*+    +*+    +*+                                            "
+     db "      +      +      +      +      +                                             ","$"
+
+canh db "                                                                                "
+     db "                                      __^__                                     "
+     db "                                      |   |                                     ","$"
+     
+vitoria db "  ! ! ! ! ! ! ! ! ! ! ! ! ! VOCE VENCEU ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !  "
+        db "                    PRESSIONE 'R' PARA JOGAR NOVAMENTE                       "
+        db "                          PRESSIONE 'E' PARA SAIR                            ", "$"
+qnt_interrupts db 0
+nave_posicao db 38 ; 2 = max esquerda, 74 = max direita
+nave_atirou db 0 ; 0 = nao atirou, 1 = atirou
+direcao_nave db 0; 0 = nenhuma, 1 = esquerda, 2 = direita
+
+var_offset_anterior1 dw ?   
+var_offset_anterior2 dw ?
+var_numero_inimigos db 5 
+
+var_tempo_entre_tiros db 0;4 ciclos sem atirar
+
+var_pausado db 0; 1 pausado, 0 nao pausado
+ends
+
+stack segment
+    dw   128  dup(0)
+ends
+
+code segment
+start:
+; set segment registers:
+    mov ax, data
+    mov ds, ax
+    mov es, ax
+
+    ; seta video para 80x25
+    mov ah, 0
+    mov al, 3
+    int 10h
+       
+    call reiniciar_jogo
+
+
+;/////////////////////////////////////////////
+;thead principal
+;/////////////////////////////////////////////
+
+wait_for_key:
+
+; check for keystroke in
+; keyboard buffer:
+        mov     ah, 1
+        int     16h
+        jz      wait_for_key
+; get keystroke from keyboard:
+; (remove from the buffer)
+        mov     ah, 0
+        int     16h
+
+; press 'E' ou 'e' para sair
+        cmp     al, 'E'
+        jz      exit 
+        cmp     al, 'e'
+        jz      exit   
+       
+        cmp     al, 'R'
+        jz      reiniciar 
+        cmp     al, 'r'
+        jz      reiniciar     
+
+;Verifica as acoes da nave
+        mov     byte ptr direcao_nave, 0
+        cmp     al, 'd'
+        je atribuir_mover_direita
+        cmp     al, 'D'
+        je atribuir_mover_direita
+       
+        cmp     al, 'a'
+        je atribuir_mover_esquerda
+        cmp     al, 'A'
+        je atribuir_mover_esquerda
+       
+        cmp     al, 20h ; barra espaco
+        je atribuir_tiro
+       
+       
+        jmp     wait_for_key
+       
+atribuir_mover_direita:
+        mov byte ptr direcao_nave, 1
+        jmp wait_for_key
+
+atribuir_mover_esquerda:
+        mov byte ptr direcao_nave, 2         
+        jmp wait_for_key
+       
+atribuir_tiro:
+        mov byte ptr nave_atirou, 1
+        jmp wait_for_key
+       
+reiniciar:
+    jmp start 
+         
+exit: 
+    call para_thread
+   
+    call CLRSCR
+   
+    mov ax, 4c00h ; exit to operating system.
+    int 21h     
+
+; tratador de interrupcao 1ch se encontra aqui...
+Timer_Stick:
+       pusha  ; salve todos os registradores
+       
+       cmp var_numero_inimigos, 0
+       je venceu_jogo
+       
+       inc var_tempo_entre_tiros
+       inc qnt_interrupts
+       
+       call Controla_nave
+       call Move_tiros   
+       
+       cmp byte ptr qnt_interrupts, 4
+       jne stop
+       
+       mov al,0
+       mov qnt_interrupts,al
+
+; set segment register to video memory:
+
+       mov     ax, 0b800h
+       mov     es, ax
+       
+       mov al,0                     ;compara se deve rotacionar direita ou esquerda
+       cmp byte ptr rilf,al         ;1 = right, 0 = left
+       je left
+       jmp right
+
+left:
+      mov di, 0        ; ponteiro para offset 0 do segmento video b800h
+     
+rotaciona_left:
+      mov al,es:[di+2] ;pega conteudo apontado por offset posterior
+      mov es:[di],al   ;e joga na posicao atual
+      add di,2         ;avanca 2 posicoes
+      cmp di,478       ;avancou 3 linhas = 3*160
+      je inc_left      ;verifique se rotacionou tudo 40 vezes
+      jmp rotaciona_left
+
+inc_left:
+       inc byte ptr rlef ; soma uma rotacao esquerda
+       mov al,40         ;verifique se rotacionou tudo 40 vezes
+       cmp byte ptr rlef,al
+       je rotacionou_40_vezes_left ;se rotacionou 40 vezes...
+       jmp stop
+
+rotacionou_40_vezes_left:
+       mov al,0        ; zera contador
+       mov byte ptr rlef,al
+       
+       mov al,1
+       mov byte ptr rilf,al ; indica rotacao direita...       
+       
+       jmp stop
+       
+right:
+      mov di, 478      ; ponteiro para offset 378 do segmento video b800h
+     
+rotaciona_right:
+      mov bx,di
+      sub bx,2
+      mov al,es:[bx] ;pega conteudo apontado por offset anterior
+      mov es:[di],al   ;e joga na posicao atual
+      sub di,2         ;volta 2 posicoes
+      cmp di,0         ;voltou 3 linhas = 3*160
+      je inc_right      ;verifique se rotacionou tudo 40 vezes
+      jmp rotaciona_right
+
+inc_right:
+       inc byte ptr rrig ; soma uma rotacao direita
+       mov al,40         ;verifique se rotacionou tudo 40 vezes
+       cmp byte ptr rrig,al
+       je rotacionou_40_vezes_right ;se rotacionou 40 vezes...
+       jmp stop
+
+rotacionou_40_vezes_right:
+       mov al,0        ; zera contador
+       mov byte ptr rrig,al
+       
+       mov al,0
+       mov byte ptr rilf,al ; indica rotacao esquerda...       
+             
+stop:
+       popa  ; re-store all registers.
+       iret  ; return from interrupt. 
+       
+       
+;--------------------
+;INICIO CONTROLA NAVE
+;--------------------     
+Controla_nave:
+       pusha
+       
+       cmp byte ptr direcao_nave, 1
+       je move_nave_direita
+
+       cmp byte ptr direcao_nave, 2
+       je move_nave_esquerda
+       
+retorno_move_nave:
+
+       cmp nave_atirou, 1
+       je atira_com_nave
+retorno_atira_com_nave:
+     
+       mov byte ptr direcao_nave, 0
+       popa
+       ret
+       
+               
+       
+move_nave_direita:
+       cmp byte ptr nave_posicao, 74 ;posicao maxima a direita
+       je retorno_move_nave
+       inc byte ptr nave_posicao
+       
+
+       mov di,4000  ;25*160
+continua_movendo_direita:       
+       mov al, es:[di]
+       mov es:[di+2], al   
+       sub di, 2
+       
+       cmp di, 3680 ;23*160
+       je retorno_move_nave
+       jmp continua_movendo_direita
+       
+move_nave_esquerda:
+       cmp byte ptr nave_posicao, 2 ; posicao maxima a esquerda
+       je retorno_move_nave
+       dec byte ptr nave_posicao
+       
+       mov di,3680
+continua_movendo_esquerda:     
+       mov al, es:[DI+2]
+       mov es:[di], al 
+       add di, 2
+       
+       cmp di, 4000
+       je retorno_move_nave
+       jmp continua_movendo_esquerda
+
+atira_com_nave:
+       cmp var_tempo_entre_tiros, 0 ; se for menor que 0 eh pq ultrapassou 255
+       jl continua_atira_com_nave
+ 
+       cmp var_tempo_entre_tiros, 4
+       jl retorno_atira_com_nave 
+       
+continua_atira_com_nave:
+       mov byte ptr var_tempo_entre_tiros, 0
+       
+       mov nave_atirou, 0 
+       mov di, 3520 ; 22*160
+       mov ax, 0
+       mov al, byte ptr nave_posicao
+       add di, ax
+       add di, ax
+       add di, 4
+       mov es:[di],"^"
+       jmp retorno_atira_com_nave
+       
+;--------------------
+;FIM CONTROLA NAVE
+;--------------------
+       
+       
+Move_tiros:
+       mov ax, 0b800h
+       mov es, ax
+       mov bx, 0
+       mov cx, 1840 ; 23*80
+procura_tiros:
+       mov al, es:[bx]
+       cmp al,"^"
+       je move_e_verifica_colisao 
+retorno_move_e_verifica_colisao:
+       add bx, 2
+       loop procura_tiros
+       ret
+       
+move_e_verifica_colisao:
+       mov si, bx
+       cmp byte ptr qnt_interrupts, 4
+       jne move_e_verifica_colisao_continua ; So continua a verificacao se for momento de as
+                                            ;   naves se moverem
+                                           
+       cmp si, 639 ;4*160-1 ultima linha das naves
+       jg move_e_verifica_colisao_continua ; Verifica se o tiro esta na area dos tiros
+       cmp byte ptr rilf, 0                ; Se estiver verifica para qual lado
+       je move_e_verifica_colisao_esquerda ;   as naves estao indo e adiciona o tiro
+       sub si, 2                           ;   em uma posicao inversao a direcao dos tiros
+       jmp move_e_verifica_colisao_continua
+
+move_e_verifica_colisao_esquerda:
+       add si, 2
+
+move_e_verifica_colisao_continua:
+       cmp es:[si-160], "+"
+       je colisao_nave
+       cmp es:[si-160], "*"
+       je destroi_nave
+       mov al, es:[bx]
+       mov es:[si-160], al
+       mov es:[bx], " "
+       
+       jmp retorno_move_e_verifica_colisao
+colisao_nave:
+       mov es:[si-160], " "
+       mov es:[bx], " "
+       
+       jmp retorno_move_e_verifica_colisao
+destroi_nave:
+       mov es:[si-322], " "
+       mov es:[si-320], " "
+       mov es:[si-318], " "
+       mov es:[si-162], " "
+       mov es:[si-160], " "
+       mov es:[si-158], " "
+       mov es:[si-2], " "
+       mov es:[si], " "
+       mov es:[si+2], " "
+       dec byte ptr var_numero_inimigos
+       jmp retorno_move_e_verifica_colisao
+
+venceu_jogo:
+       MOV AH,2  ; POSICIONA CURSOR
+       MOV BH,0
+       MOV DH,10 ; LINHA  1
+       MOV DL,4 ; COLUNA 1
+       INT 10H
+       
+       mov dx, offset vitoria
+       mov ah, 9
+       int 21h
+       
+       call para_thread
+       jmp stop
+
+para_thread:
+    push es
+    mov ax, 0       
+    mov es, ax
+    mov al, 1ch   
+    mov bl, 4h       
+    mul bl         
+    mov bx, ax
+    mov si, var_offset_anterior1
+    mov es:[bx], si
+    add bx, 2     
+   
+    mov ax, var_offset_anterior2     
+    mov es:[bx], ax
+    pop es
+    ret
+   
+continua_thread:
+    ; seta es para segmento "0000":
+    mov ax, 0       
+    mov es, ax
+    ; calcula endereco vetor para interrucao hardware 1ch (TIMER TICK, 18.2 TIMES SECOND)
+    mov al, 1ch   
+    ; multiplique 1ch por 4, guarde resultado em AX
+    mov bl, 4h       
+    mul bl         
+    mov bx, ax
+    ; copie offset dentro do vetor de interrupcao
+    mov si, offset [Timer_Stick] 
+    mov ax, es:[bx]
+    mov var_offset_anterior1, ax
+    mov es:[bx], si
+    add bx, 2   
+     ; copie segmento dentro do vertor de interrupcao
+    mov ax, es:[bx]
+    mov var_offset_anterior2, ax
+    mov ax, cs     
+    mov es:[bx], ax
+    ret
+
+reiniciar_jogo:
+       call CLRSCR
+       call desenha_naves
+       call desenha_canhao
+       call inicia_variaveis
+       call continua_thread
+       ret   
+     
+CLRSCR:
+        MOV AX,0B800H
+        MOV ES,AX
+        MOV DI,0
+APAGANDO:
+        MOV AL," "
+        MOV ES:[DI],AL
+        ADD DI,2
+        CMP DI, 40000   ; 25X80 + ATRIBUTO DE COR PARA CADA BYTE
+        JG SAI
+        JMP APAGANDO
+SAI:       
+        RET
+
+
+desenha_canhao:
+        MOV AX,0B800H
+        MOV ES,AX
+        MOV DI,3520  ; 22x160
+        MOV SI,offset canh
+imprime_canhao:
+        MOV al,[si]           ; imprime ate achar "$"
+        cmp al,"$"
+        je sai_canhao
+        mov es:[di],al
+        add di,2
+        inc si
+        jmp imprime_canhao
+sai_canhao:       
+        ret
+       
+desenha_naves:
+        ;desenha ovni
+        MOV AH,2  ; POSICIONA CURSOR
+        MOV BH,0
+        MOV DH,0 ; LINHA  1
+        MOV DL,0 ; COLUNA 1
+        INT 10H
+       
+        mov dx,offset ovni
+        mov ah,9
+        int 21h
+
+        ret
+       
+inicia_variaveis:
+        mov qnt_interrupts,0
+        mov byte ptr rilf,1 ; indica rotacao direita
+        mov byte ptr rlef,0 ; quantidade rotacoes esquerda       
+        mov byte ptr rrig,0 ; quantidade rotacoes direita
+        mov byte ptr nave_posicao, 38 ; posicao da nave 
+        mov byte ptr var_numero_inimigos, 5
+       
+        ret
+
+ends
+
+end start ; set entry point and stop the assembler.
+Avatar do usuário
+tcpipchip
+Dword
+ 
+Mensagens: 6560
+Registrado em: 11 Out 2006 22:32
+Localização: TCPIPCHIPizinho!
+Voltar ao topo
