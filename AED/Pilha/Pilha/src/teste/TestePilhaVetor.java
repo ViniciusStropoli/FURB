@@ -1,0 +1,19 @@
+package teste;
+
+import pilha.PilhaVetor;
+
+public class TestePilhaVetor {
+    public static void main(String[] args) {
+
+        PilhaVetor<Integer> p = new PilhaVetor<>(5);
+
+        p.push(10);
+        p.push(20);
+        p.push(30);
+
+        System.out.println(p); // 30,20,10
+
+        System.out.println(p.pop()); // 30
+        System.out.println(p.peek()); // 20
+    }
+}
