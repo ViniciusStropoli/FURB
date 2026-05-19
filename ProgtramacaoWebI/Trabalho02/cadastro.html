@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>HardRock - Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+
+    <header>
+        <div id="logo">
+            <a href="index.html"><img src="img/hardrocklogo.png" alt="Logo"></a>
+        </div>
+        <div id="info-usuario"></div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li>
+                <a href="#">Hardwares ▼</a>
+                <ul>
+                    <li><a href="#">Placas de Vídeo</a></li>
+                    <li><a href="#">Processadores</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Periféricos</a></li>
+            <li><a href="login.html">LOGIN</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h2>Completar Cadastro</h2>
+
+        <div class="seletor-tema">
+            <label><strong>Estilo da Página:</strong></label>
+            <select id="seletorEstilo" onchange="mudarTema()">
+                <option value="default">Default</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+        
+        <form id="form-cadastro">
+            
+            <label class="form-label">Nome Completo:</label><br>
+            <input type="text" class="form-input" required><br><br>
+            
+            <label class="form-label">E-mail de Contato:</label><br>
+            <input type="email" class="form-input" required><br><br>
+
+            <label class="form-label">Data de Nascimento:</label><br>
+            <input type="date" class="form-input" required><br><br>
+
+            <label class="form-label">Estado Civil:</label><br>
+            <select class="form-input">
+                <option value="solteiro">Solteiro(a)</option>
+                <option value="casado">Casado(a)</option>
+                <option value="outro">Outro</option>
+            </select><br><br>
+
+            <label class="form-label">Deseja receber novidades por e-mail?</label><br>
+            <input type="radio" name="novidades" value="sim" checked> Sim
+            <input type="radio" name="novidades" value="nao"> Não<br><br>
+
+            <label class="form-label">Termos de Uso:</label><br>
+            <input type="checkbox" required> Aceito os termos e condições.<br><br>
+            
+            <button type="submit">Enviar Dados</button>
+        </form>
+
+    </main>
+
+    <footer>
+        Desenvolvido por Pedro Renan Luna Tavares e Vinicius Stropoli de Paula
+    </footer>
+
+</body>
+</html>
