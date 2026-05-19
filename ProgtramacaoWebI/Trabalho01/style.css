@@ -1,0 +1,70 @@
+header {
+    width: 100%;
+    font-size: larger;
+    background-color: lightblue;
+}
+
+nav ul li{
+    display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    width: 45%;
+}
+
+td {
+    border: 1px solid black;
+    height: 40px;
+}
+
+form {
+    background-color: lightblue; 
+    border: 2px solid black; 
+    padding: 20px;
+    margin-top: 20px;
+    width: 300px;
+}
+
+input[type="submit"], input[type="reset"] {
+    background-color: green; 
+    color: white; 
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#comidas li:first-child {
+    font-size: 2em; 
+}
+
+#comidas li:last-child {
+    font-size: 0.8em; 
+}
+
+.caixa-hover {
+    padding: 20px;
+    border: 1px solid #ccc;
+    transition: background-color 0.3s;
+}
+
+.caixa-hover:hover {
+    background-color: yellow; 
+}
+
+#tabela-clicavel {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#tabela-clicavel td {
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#tabela-clicavel tr:nth-child(odd) {
+    background-color: silver; 
+}
