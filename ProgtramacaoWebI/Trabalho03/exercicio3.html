@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercício 3</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos para a tabela deste exercício */
+        table { border-collapse: collapse; margin-bottom: 10px; width: 100%; }
+        td { border: 1px solid #333; padding: 10px; text-align: center; }
+        .atividade { cursor: pointer; margin: 5px 0; color: blue; }
+        .atividade:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html">← Voltar ao Menu</a>
+        <h2>Exercício 3: Tabela, Contador e Lista</h2>
+        
+        <h3>Tabela Dinâmica</h3>
+        <table id="minhaTabela">
+            <tr><td>Linha 1, Col 1</td><td>Linha 1, Col 2</td><td>Linha 1, Col 3</td></tr>
+            <tr><td>Linha 2, Col 1</td><td>Linha 2, Col 2</td><td>Linha 2, Col 3</td></tr>
+            <tr><td>Linha 3, Col 1</td><td>Linha 3, Col 2</td><td>Linha 3, Col 3</td></tr>
+        </table>
+        <button id="btnAdicionarLinha">Adicionar Nova Linha</button>
+
+        <h3>Contador em Tempo Real</h3>
+        <div id="contador" style="font-size: 24px; font-weight: bold; color: red;">0</div>
+
+        <h3>Atividades Favoritas</h3>
+        <ul id="listaAtividades">
+            <li class="atividade">Ouvir Música</li>
+            <li class="atividade">Ler Livros</li>
+            <li class="atividade">Jogar Videogame</li>
+            <li class="atividade">Praticar Esportes</li>
+            <li class="atividade">Programar</li>
+        </ul>
+    </div>
+
+    <script src="js/exercicio3.js"></script>
+</body>
+</html>
