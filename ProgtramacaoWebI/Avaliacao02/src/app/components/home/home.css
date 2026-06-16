@@ -1,0 +1,12 @@
+:host { display: block; }
+.home-hero { display:flex; align-items:center; justify-content:center; padding: 2rem; }
+.home-hero .card {
+	background: white;
+	padding: 2rem;
+	border-radius: 10px;
+	box-shadow: 0 6px 18px rgba(10,20,40,0.08);
+	text-align: center;
+	max-width: 760px;
+}
+.home-hero h1 { margin: 0 0 0.5rem 0; font-size: 1.75rem; }
+.home-hero p { margin: 0; color: #444; line-height: 1.5; }
