@@ -1,0 +1,15 @@
+<section class="cards">
+	<div class="card" *ngFor="let f of funcionarios">
+		<div class="card-photo">
+			<img [src]="f.foto" alt="Foto de {{ f.nome }}" />
+		</div>
+		<div class="card-item card-item-1">
+			<div class="nome">{{ f.nome }}</div>
+			<div class="propriedadel">{{ f.subobjeto.propriedadel }}</div>
+		</div>
+		<div class="card-item card-item-2">{{ f.subobjeto.propriedade2 }}</div>
+		<div class="card-item card-email">
+			<a [href]="'mailto:' + f.email">{{ f.email }}</a>
+		</div>
+	</div>
+</section>
