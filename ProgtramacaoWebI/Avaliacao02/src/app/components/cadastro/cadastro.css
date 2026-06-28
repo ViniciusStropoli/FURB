@@ -1,0 +1,132 @@
+.cadastro-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  width: 100%;
+  max-width: 960px;
+}
+
+.page-header h1 {
+  margin: 0 0 0.35rem 0;
+  font-size: clamp(1.9rem, 2.2vw, 2.6rem);
+}
+
+.page-header p {
+  margin: 0;
+  color: #444;
+  line-height: 1.6;
+}
+
+.search-form,
+.update-form {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(15, 30, 70, 0.08);
+}
+
+.search-controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  margin-top: 0.75rem;
+}
+
+.search-controls input,
+.update-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #cdd4df;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: #fefefe;
+}
+
+.update-form label,
+.search-form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #2b3a55;
+}
+
+.primary-button,
+.danger-button,
+.search-controls button {
+  border: none;
+  border-radius: 10px;
+  padding: 0.95rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button,
+.search-controls button {
+  background: #0b3d91;
+  color: white;
+}
+
+.danger-button {
+  background: #c62828;
+  color: white;
+  margin-top: 1.25rem;
+}
+
+.primary-button:disabled,
+.search-controls button:disabled,
+.danger-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.result-card,
+.update-section {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(15, 30, 70, 0.08);
+}
+
+.data-grid {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.alert {
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.alert.success {
+  background: #d4f7d9;
+  color: #1f6f33;
+}
+
+.alert.error {
+  background: #f8d2d1;
+  color: #7d1f1d;
+}
+
+.alert-error {
+  background: #ffe5d5;
+  color: #8a2f1f;
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+}
+
+@media (max-width: 700px) {
+  .search-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-button,
+  .danger-button,
+  .search-controls button {
+    width: 100%;
+  }
+}

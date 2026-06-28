@@ -1,0 +1,60 @@
+<section class="cadastro-page container">
+  <header class="page-header">
+    <h1>Cadastro</h1>
+    <p>Consulte, exclua ou atualize um registro usando o ID do cadastro.</p>
+  </header>
+
+  <form class="search-form" (ngSubmit)="consultar()">
+    <label for="cadastro-id">ID do cadastro</label>
+    <div class="search-controls">
+      <input
+        id="cadastro-id"
+        type="number"
+        min="1"
+        [value]="searchId() || ''"
+        (input)="searchId.set($any($event.target).valueAsNumber)"
+        placeholder="Digite o ID"
+      />
+      <button type="button" (click)="consultar()" [disabled]="carregando()">Consultar</button>
+    </div>
+  </form>
+
+  <div *ngIf="error()" class="alert alert-error" role="alert">{{ error() }}</div>
+  <div *ngIf="feedback()" class="alert" [class.success]="feedback()?.status === 'Ok'" [class.error]="feedback()?.status === 'Erro'">
+    {{ feedback()?.mensagem }}
+  </div>
+
+  <article *ngIf="cadastro()" class="result-card">
+    <h2>Dados do cadastro</h2>
+    <div class="data-grid">
+      <div><strong>ID:</strong> {{ cadastro()?.id }}</div>
+      <div><strong>Nome:</strong> {{ cadastro()?.nome }}</div>
+      <div><strong>Departamento:</strong> {{ cadastro()?.departamento }}</div>
+      <div><strong>Endereço:</strong> {{ cadastro()?.endereco }}</div>
+      <div><strong>E-mail:</strong> {{ cadastro()?.email }}</div>
+    </div>
+    <button type="button" class="danger-button" (click)="exclusao()" [disabled]="carregando()">Excluir</button>
+  </article>
+
+  <section class="update-section" *ngIf="cadastro()">
+    <h2>Alterar cadastro</h2>
+    <form class="update-form" (ngSubmit)="alterar()">
+      <fieldset>
+        <legend>Informações atualizáveis</legend>
+
+        <label for="nome">Nome</label>
+        <input id="nome" type="text" [value]="nome()" (input)="nome.set($any($event.target).value)" required />
+
+        <label for="departamento">Departamento</label>
+        <input id="departamento" type="text" [value]="departamento()" (input)="departamento.set($any($event.target).value)" required />
+
+        <label for="endereco">Endereço</label>
+        <input id="endereco" type="text" [value]="endereco()" (input)="endereco.set($any($event.target).value)" required />
+
+        <label for="email">E-mail</label>
+        <input id="email" type="email" [value]="email()" (input)="email.set($any($event.target).value)" required />
+      </fieldset>
+      <button type="button" class="primary-button" (click)="alterar()" [disabled]="carregando()">Alterar</button>
+    </form>
+  </section>
+</section>
